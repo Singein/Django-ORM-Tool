@@ -1,4 +1,4 @@
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 
 from dotlib.core import ORM
 from dotlib.meta_reflex import table2model
