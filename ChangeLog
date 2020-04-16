@@ -1,15 +1,14 @@
 CHANGES
 =======
 
-v0.0.2
+v0.0.3
 ------
 
+* [release] 0.0.3
+* feat(utils): 新增logger方法
+* docs(ChangeLog): update changes about [0.0.2]
 * [release] 0.0.2
 * fix(settings.py): 修复router路径问题
 * docs(ChangeLog): update changes about [0.0.1]
-
-v0.0.1
-------
-
 * feat(dotlib): Basical function done
 * init
