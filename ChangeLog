@@ -1,6 +1,13 @@
 CHANGES
 =======
 
+v0.0.4
+------
+
+* [release] 0.0.4
+* fix(utils): 修复了logger的语法错误
+* docs(ChangeLog): update changes about [0.0.3]
+
 v0.0.3
 ------
 
