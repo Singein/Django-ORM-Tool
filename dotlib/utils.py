@@ -1,4 +1,5 @@
 import logging
+import sys
 # from contextlib import contextmanager
 
 # import xlrd
@@ -6,8 +7,8 @@ import logging
 
 
 def use_logger(name: str, level: str = 'INFO'):
-    logger = logging.getLogger(__file__)
-    fh = logging.FileHandler(f'{__file__}.log', encoding='utf-8')
+    logger = logging.getLogger(name)
+    fh = logging.FileHandler(f'{name}.log', encoding='utf-8')
     sh = logging.StreamHandler(stream=sys.stdout)
     formater = logging.Formatter(
         "%(asctime)s  %(name)s %(levelname)s  %(message)s")
@@ -15,8 +16,7 @@ def use_logger(name: str, level: str = 'INFO'):
     sh.setFormatter(formater)
     logger.addHandler(fh)
     logger.addHandler(sh)
-    logger.setLevel(eval(f"logging.{level}")
-
+    logger.setLevel(eval(f"logging.{level}"))
     return logger
 
 
@@ -31,7 +31,7 @@ def use_logger(name: str, level: str = 'INFO'):
 
 #     elif option == 'w':
 #         workbook=xlwt.Workbook(filename, encoding="utf-8")
-#         sheet = 
+#         sheet =
 #         pass
 #     else:
 #         pass

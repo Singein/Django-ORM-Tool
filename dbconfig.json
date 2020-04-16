@@ -1,10 +1,10 @@
 {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "xxx",
+        "NAME": "collection",
         "USER": "postgres",
-        "PASSWORD": "",
-        "HOST": "",
-        "PORT": ""
+        "PASSWORD": "password123",
+        "HOST": "frp1.jizhen.cool",
+        "PORT": "5432"
     }
 }
