@@ -1,6 +1,13 @@
 CHANGES
 =======
 
+v0.0.5
+------
+
+* [release] 0.0.5
+* feat(meta\_reflex): 新增了对模型父类继承的支持
+* docs(ChangeLog): update changes about [0.0.4]
+
 v0.0.4
 ------
 
