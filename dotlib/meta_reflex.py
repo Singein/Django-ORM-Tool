@@ -40,6 +40,9 @@ class MetaReflex:
     """
 
     # db_module = 'django.db'
+    def __init__(self, BaseModel: object):
+
+        MetaReflex.BASE_MODEL = BaseModel
 
     def handle_inspection(self, options):
         connection = connections[options['database']]
@@ -94,7 +97,9 @@ class MetaReflex:
 
                 yield ''
                 yield ''
-                yield 'class %s(models.Model):' % table2model(table_name)
+                # 此处混入类的继承
+                yield f'class {table2model(table_name)}(MetaReflex.BASE_MODEL):'
+
                 known_models.append(table2model(table_name))
                 used_column_names = []  # Holds column names used in the table so far
                 column_to_field_name = {}  # Maps column names to names of model fields
@@ -377,19 +382,20 @@ def gen_model_meta_code(table_name: str, db_alias: str, model_name: str) -> str:
     return _model
 
 
-def table2model(table_name: str, db_alias: str) -> models.Model:
+def table2model(table_name: str, db_alias: str, super_class: object = models.Model) -> models.Model:
     """根据指定表名称，库名称，利用元编程将生成的模型名称以model_name注入到全局变量.
 
     Arguments:
         table_name {str} -- 表名称
         db_alias {str} -- 数据库连接别名
         model_name {str} -- 模型局部或全局变量名
+        super_class: {str} -- 继承自的父类的类名
 
     Returns:
         str -- [description]
     """
 
-    mr = MetaReflex()
+    mr = MetaReflex(super_class)
 
     options = {
         'include_partitions': True,
