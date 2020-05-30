@@ -45,8 +45,8 @@ def ORM(dbconfig: str = None):
         dbconfig (str):Database configuration file path, json format 
     """
 
-    dbconfig_path = os.path.join(os.path.abspath(os.getcwd()),
-                                 DEFAULT_FILENAME) or dbconfig
+    dbconfig_path = dbconfig or os.path.join(os.path.abspath(os.getcwd()),
+                                             DEFAULT_FILENAME)
     if not os.path.exists(dbconfig_path):
         raise DotlibError(dbconfig_path)
 
