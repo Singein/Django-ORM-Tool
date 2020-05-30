@@ -1,7 +1,7 @@
 
 package = {
     'name': 'dotlib',
-    'version': '0.0.5',
+    'version': '0.0.6',
     'author': 'singein',
     'email': 'singein@outlook.com',
     'scripts': {
