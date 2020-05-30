@@ -1,6 +1,13 @@
 CHANGES
 =======
 
+v0.0.6
+------
+
+* [release] 0.0.6
+* fix(dotlib.core.ORM): 修复了配置文件的路径配置BUG
+* docs(ChangeLog): update changes about [0.0.5]
+
 v0.0.5
 ------
 
