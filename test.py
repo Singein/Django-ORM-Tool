@@ -1,18 +1,16 @@
 from django.db import models
+from loguru import logger
+
+from dotlib import MetaReflex
 from dotlib import ORM
+
 # ORM is a context manager, it is responsible for loading Django's
 # db module according to the given database configuration information.
-
-from dotlib import table2model
 # The table2model method is responsible for converting the table with
 # the specified name under the specified database connection to a django orm model
 
-from dotlib import use_logger
 
-
-logger = use_logger(__file__)
-logger.info("Hello")
-
+# logger.add(sys.stdout, level="INFO", filter=__file__)
 with ORM():
     pass
 
@@ -35,8 +33,14 @@ class TestModel2(models.Model):
         abstract = True
 
 
-MODEL = table2model('test', 'default', TestModel)
-MODEL2 = table2model('test_copy1', 'default', TestModel2)
+if __name__ == '__main__':
+    MODEL = MetaReflex.table2model('blogs_article', 'default', TestModel)
+    MODEL2 = MetaReflex.table2model('student', 'test')
+    student = MODEL2.objects.get(id=1)
+    logger.info(student.class_field.name)
+    logger.info(student.class_field.school.name)
+    logger.info(student.class_field)
+
 # with ORM(dbconfig='./dbconfig.json'):
 #     # dbconfig is the path of the configuration file just created
 #     # deconfig's default value is the absolute path of dbconfig.json
