@@ -1,3 +1,4 @@
+from pycman.utils.common import datetime_format
 
 package = {
     'name': 'dotlib',
@@ -5,6 +6,7 @@ package = {
     'author': 'singein',
     'email': 'singein@outlook.com',
     'scripts': {
-        'default': 'echo 请输入明确的命令名称'
+        'default': "echo default",
+        'tests': f'pytest tests -n=auto --html=test_reports/test-report-{datetime_format()}.html --self-contained-html'
     }
 }
