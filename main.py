@@ -13,7 +13,7 @@ def auto_commit_job():
     print(files)
     
     os.system('git commit -m "change %s"'%random.choice(files))
-    os.system('git push -u origin feature_autocommit')
+    os.system('git push -f origin feature_autocommit')
 
 
 
