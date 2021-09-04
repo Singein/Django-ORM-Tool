@@ -20,8 +20,9 @@ def auto_commit_job():
 
 
 if __name__ == "__main__":
-    import os
-    files = [i for i in os.walk('./dotlib')][0][2]
-    print(files)
-    auto_commit_job()
-    # schedule.every(10).minutes.do(auto_commit_job)
+   
+    schedule.every(10).seconds.do(auto_commit_job)
+    import time
+    while True:
+        schedule.run_pending()
+        time.sleep(5)
