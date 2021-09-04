@@ -5,7 +5,7 @@ import random
 def auto_commit_job():
     print("==> Auto commit job start...")
     codes = open("autocommit.py", encoding='utf-8').read()
-    codes = codes.replace('\n', random.randint(0, 10) * '\n')
+    codes = codes.replace('\n', random.randint(1, 10) * '\n')
     with open('autocommit.py', 'w',encoding='utf-8') as f:
         f.write(codes)
     import os
