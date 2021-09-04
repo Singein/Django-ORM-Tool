@@ -4,7 +4,7 @@ import random
 
 def auto_commit_job():
     print("==> Auto commit job start...")
-    with open('autocommit.py', 'w',encoding='utf-8') as f:
+    with open('autocommits.py', 'w',encoding='utf-8') as f:
         f.write(random.randint(1, 1000) * random.choice('abcdefghijk1235546'))
     import os
     os.system("git add .")
