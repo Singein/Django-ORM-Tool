@@ -64,7 +64,9 @@ class MetaReflex:
 
         logger.debug(meta_code)
         exec(meta_code)
-        _model = eval("%s\n" % meta_code.split('(', 1)[0].replace('class ', '').replace('\n', ''))
+        _model = eval("%s\n" % meta_code.split(
+            '(', 1)[0].replace('class ', '').replace('\n', ''))
+
         for table_name in mr.unknown_tables:
             MetaReflex.table2model(table_name, db_alias, super_class)
             mr.unknown_tables.remove(table_name)

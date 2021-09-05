@@ -1,8 +1,8 @@
-import json
-import os
 from contextlib import contextmanager
-
 import django
+import os
+import json
+import sys
 
 TEMPLATE = {
     'default': {
@@ -24,8 +24,7 @@ class DotlibError(BaseException):
         print("DBConfig file [%s] missed!" % dbconfig_path)
         with open(dbconfig_path, 'w', encoding='utf-8') as f:
             f.write(json.dumps(TEMPLATE, indent=4))
-        print(
-            "Dotlib has helped you create this file, please run it again after completing the information in this file")
+        print("Dotlib has helped you create this file, please run it again after completing the information in this file")
 
 
 def create_temp_config():
@@ -55,6 +54,3 @@ def ORM(dbconfig: str = None):
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "dotlib.settings")
     django.setup()
     yield
-    os.environ.pop("DOTLIB_DBCONFIG_PATH")
-    os.environ.pop("DJANGO_SETTINGS_MODULE")
-    # del django
