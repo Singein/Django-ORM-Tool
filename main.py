@@ -13,7 +13,8 @@ def auto_commit_job():
     print(files)
     
     os.system('git commit -m "change %s"'%random.choice(files))
-    os.system('git push -f origin feature_autocommit')
+    os.system('git push -u origin feature_autocommit')
+    print("==> job done.")
 
 
 
@@ -23,4 +24,4 @@ if __name__ == "__main__":
     import time
     while True:
         schedule.run_pending()
-        time.sleep(5)
+        time.sleep(1)
