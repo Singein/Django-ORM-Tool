@@ -8,4 +8,3 @@ build/
 dbconfig.json
 *.log
 .idea/
-test_reports/
