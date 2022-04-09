@@ -1,8 +1,8 @@
 from django.db import models
 from loguru import logger
 
-from dotlib import MetaReflex
-from dotlib import ORM
+from haorm import Haorm
+from haorm import ORM
 
 # ORM is a context manager, it is responsible for loading Django's
 # db module according to the given database configuration information.
@@ -34,8 +34,8 @@ class TestModel2(models.Model):
 
 
 if __name__ == '__main__':
-    MODEL = MetaReflex.table2model('blogs_article', 'default', TestModel)
-    MODEL2 = MetaReflex.table2model('student', 'test')
+    MODEL = Haorm.table2model('blogs_article', 'default', TestModel)
+    MODEL2 = Haorm.table2model('student', 'test')
     student = MODEL2.objects.get(id=1)
     logger.info(student.class_field.name)
     logger.info(student.class_field.school.name)

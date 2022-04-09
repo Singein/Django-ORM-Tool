@@ -13,7 +13,7 @@ with open(os.environ['DOTLIB_DBCONFIG_PATH'], encoding='utf-8') as f:
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-DATABASE_ROUTERS = ['dotlib.router.DataBaseRouter']
+DATABASE_ROUTERS = ['haorm.router.DataBaseRouter']
 DATABASES = json.loads(configs)
 
 # Internationalization

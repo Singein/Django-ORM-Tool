@@ -1,6 +1,5 @@
-import importlib
 import keyword
-import os
+import keyword
 import re
 from collections import OrderedDict
 
@@ -8,48 +7,33 @@ from django.db import connections, models
 from django.db.models.constants import LOOKUP_SEP
 from loguru import logger
 
-MIXIN = None
 
-
-def get_mixin():
-    settings = importlib.import_module(
-        dict(os.environ)['DJANGO_SETTINGS_MODULE'])
-
-    if hasattr(settings, "MIXIN_MODEL"):
-        try:
-            mixin = importlib.import_module(settings.MIXIN_MODEL)
-            return mixin
-        except:
-            logger.error('mixin 路径错误，无法动态导入')
-            return None
-    else:
-        return None
-
-
-class MetaReflexError(BaseException):
+class MetaReflexError(Exception):
     pass
 
 
-class MetaReflex:
+class Haorm:
     """
     利用元编程将任意指定库表，
     反向动态生成Django.db.models类
     """
-    REFLEX_MODELS = {}
 
-    # db_module = 'django.db'
-    def __init__(self, base_model: object):
-        MetaReflex.BASE_MODEL = base_model
-        self.unknown_tables = []
+    def __init__(self):
+        self.MODELS = {}
+        self._unknown_tables = []
 
-    @staticmethod
-    def table2model(table_name: str, db_alias: str, super_class: object = models.Model) -> models.Model:
+    def table2model(self,
+                    table_name: str,
+                    db_alias: str = 'default',
+                    super_class: type = models.Model) -> models.Model:
+
+        if not table_name:
+            raise MetaReflexError('invalid table_name')
+
         model_cached_key = f"{db_alias}.{table_name}"
 
-        if model_cached_key in MetaReflex.REFLEX_MODELS:
-            return MetaReflex.REFLEX_MODELS[model_cached_key]
-
-        mr = MetaReflex(super_class)
+        if model_cached_key in self.MODELS:
+            return self.MODELS[model_cached_key]
 
         options = {
             'include_partitions': True,
@@ -57,24 +41,23 @@ class MetaReflex:
             "table": [table_name],
             "database": db_alias
         }
-        meta_code = ''
-        # 迭代生成模型描述代码
-        for i in mr.handle_inspection(options):
-            meta_code += f'{i}\n'
 
+        # 迭代生成模型描述代码
+        meta_code = '\n'.join(self.handle_inspection(options, super_class=super_class))
         logger.debug(meta_code)
         exec(meta_code)
-        _model = eval("%s\n" % meta_code.split(
-            '(', 1)[0].replace('class ', '').replace('\n', ''))
+        reflex_model = eval("%s\n" % meta_code.split('(', 1)[0].replace('class ', '').replace('\n', ''))
 
-        for table_name in mr.unknown_tables:
-            MetaReflex.table2model(table_name, db_alias, super_class)
-            mr.unknown_tables.remove(table_name)
+        self.MODELS[model_cached_key] = reflex_model
 
-        MetaReflex.REFLEX_MODELS[model_cached_key] = _model
-        return _model
+        # 递归的去构建未知的关系表模型
+        for table_name in self._unknown_tables:
+            table_name = self._unknown_tables.pop(table_name)
+            self.table2model(table_name, db_alias, super_class)
 
-    def handle_inspection(self, options):
+        return reflex_model
+
+    def handle_inspection(self, options, super_class):
         connection = connections[options['database']]
         # 'table_name_filter' is a stealth option
         table_name_filter = options.get('table_name_filter')
@@ -128,7 +111,7 @@ class MetaReflex:
                 yield ''
                 yield ''
                 # 此处混入类的继承
-                yield f'class {table_name2model_name(table_name)}(MetaReflex.BASE_MODEL):'
+                yield f'class {table_name2model_name(table_name)}({str(super_class.__name__)}):'
 
                 known_models.append(table_name2model_name(table_name))
                 used_column_names = []  # Holds column names used in the table so far
@@ -155,7 +138,6 @@ class MetaReflex:
                     elif column_name in unique_columns:
                         extra_params['unique'] = True
 
-                    # 去除外键关联关系
                     if is_relation:
                         rel_to = (
                             "self" if relations[column_name][1] == table_name
@@ -164,7 +146,7 @@ class MetaReflex:
                         if rel_to in known_models:
                             field_type = 'ForeignKey(%s' % rel_to
                         else:
-                            self.unknown_tables.append(relations[column_name][1])
+                            self._unknown_tables.append(relations[column_name][1])
                             field_type = "ForeignKey('%s'" % rel_to
                     else:
                         # Calling `get_field_type` to get the field type string and any
@@ -215,9 +197,6 @@ class MetaReflex:
                 for meta_line in self.get_meta(options['database'], table_name, constraints, column_to_field_name,
                                                is_view, is_partition):
                     yield meta_line
-
-                for method_line in self.mixin_method():
-                    yield method_line
 
     def normalize_col_name(self, col_name, used_column_names, is_relation):
         """
@@ -357,57 +336,3 @@ class MetaReflex:
         # 添加 app_label
         meta += ["        app_label = '%s'" % db_alias]
         return meta
-
-    def mixin_method(self) -> list:
-        global MIXIN
-        MIXIN = get_mixin()
-        method = ['']
-        if MIXIN:
-            method += [
-                "    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):"]
-            method += ["        MIXIN.before_save(self)"]
-            method += ["        super().save(force_insert=False, force_update=False, using=None, update_fields=None)"]
-            method += ["        MIXIN.after_save(self)\n"]
-            method += ["    def delete(self, using=None, keep_parents=False):"]
-            method += ["        MIXIN.before_delete(self)"]
-            method += ["        super().delete(using=None, keep_parents=False)"]
-            method += ["        MIXIN.after_delete(self)"]
-
-        return method
-
-# def table2model(table_name: str, db_alias: str, super_class: object = models.Model) -> models.Model:
-#     """根据指定表名称，库名称，利用元编程将生成的模型名称以model_name注入到全局变量.
-#
-#     Arguments:
-#         table_name {str} -- 表名称
-#         db_alias {str} -- 数据库连接别名
-#         model_name {str} -- 模型局部或全局变量名
-#         super_class: {str} -- 继承自的父类的类名
-#
-#     Returns:
-#         str -- [description]
-#     """
-#
-#     mr = MetaReflex(super_class)
-#
-#     options = {
-#         'include_partitions': True,
-#         "include_views": True,
-#         "table": [table_name],
-#         "database": db_alias
-#     }
-#     meta_code = ''
-#     # 迭代生成模型描述代码
-#     for i in mr.handle_inspection(options):
-#         meta_code += f'{i}\n'
-#
-#     logger.debug(meta_code)
-#     exec(meta_code)
-#     _model = eval("%s\n" % meta_code.split(
-#         '(', 1)[0].replace('class ', '').replace('\n', ''))
-#
-#     return _model
-#
-#
-# def fetch_relations(mr: MetaReflex) -> models.Model:
-#     pass

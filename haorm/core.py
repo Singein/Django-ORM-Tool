@@ -1,30 +1,32 @@
-from contextlib import contextmanager
-import django
-import os
 import json
-import sys
+import os
 
-TEMPLATE = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'xxx',
-        'USER': 'postgres',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
+import django
+
+DATABASES = {
+    'DATABASES': {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'xxx',
+            'USER': 'postgres',
+            'PASSWORD': '',
+            'HOST': '',
+            'PORT': '',
+        }
     }
 }
 
 DEFAULT_FILENAME = 'dbconfig.json'
 
 
-class DotlibError(BaseException):
+class DotlibError(Exception):
 
     def __init__(self, dbconfig_path):
         print("DBConfig file [%s] missed!" % dbconfig_path)
         with open(dbconfig_path, 'w', encoding='utf-8') as f:
             f.write(json.dumps(TEMPLATE, indent=4))
-        print("Dotlib has helped you create this file, please run it again after completing the information in this file")
+        print(
+            "Dotlib has helped you create this file, please run it again after completing the information in this file")
 
 
 def create_temp_config():
@@ -37,8 +39,7 @@ def create_temp_config():
         f.write(json.dumps(TEMPLATE, indent=4))
 
 
-@contextmanager
-def ORM(dbconfig: str = None):
+def init_context(dbconfig: str = None):
     """Django ORM module context autoloading
 
     Args:
@@ -51,6 +52,6 @@ def ORM(dbconfig: str = None):
         raise DotlibError(dbconfig_path)
 
     os.environ.setdefault("DOTLIB_DBCONFIG_PATH", dbconfig_path)
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "dotlib.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "haorm.settings")
     django.setup()
     yield

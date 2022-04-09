@@ -1,6 +1,5 @@
-
 package = {
-    'name': 'dotlib',
+    'name': 'haorm',
     'version': '0.0.8',
     'author': 'singein',
     'email': 'singein@outlook.com',
