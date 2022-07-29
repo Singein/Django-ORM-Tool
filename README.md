@@ -11,7 +11,7 @@ pip install haorm
 ## Quick Start
 
 First you need to create a configuration file that describes the database connection information. We can quickly
-generate a template in the current directory through the `dotlib` cli-command:
+generate a template in the current directory through the `haorm` cli-command:
 
 ```shell
 haorm
@@ -22,14 +22,14 @@ After running the command you will see a file named
 
 ```json
 {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "xxx",
-        "USER": "postgres",
-        "PASSWORD": "",
-        "HOST": "",
-        "PORT": ""
-    }
+  "default": {
+    "ENGINE": "django.db.backends.postgresql",
+    "NAME": "xxx",
+    "USER": "postgres",
+    "PASSWORD": "",
+    "HOST": "",
+    "PORT": ""
+  }
 }
 ```
 
