@@ -1,6 +1,6 @@
 package = {
     'name': 'haorm',
-    'version': '0.0.8',
+    'version': '1.0.0',
     'author': 'singein',
     'email': 'singein@outlook.com',
     'scripts': {
